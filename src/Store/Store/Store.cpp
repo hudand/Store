@@ -10,12 +10,13 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include <windows.h>
 
 std::vector<size_t> capacities{ 2, 5, 8 };
 const size_t capacityCount = capacities.size();
 
-enum productType { apples, plums, pears };
-std::vector<productType> products { apples, plums, pears };
+enum class productType { apples, plums, pears };
+std::vector<productType> products { productType::apples, productType::plums, productType::pears };
 std::vector<std::string> productNames {"apples", "plums", "pears"};
 const size_t sectionCount = products.size();
 
@@ -42,17 +43,15 @@ struct Car {
 private:
 
 	bool IsSuchCapacity(size_t pCapacity) {
-		for (auto c : capacities)
-			if (c == pCapacity)
-				return true;
-		return false;
+		auto p = std::find(capacities.begin(), capacities.end(), pCapacity);
+		return (p != capacities.end());
 	}
 };
 
 
 struct CarGenerator {
 	static Car Generate() {
-		size_t capacity = capacities[rand() % sectionCount];
+		size_t capacity = capacities[rand() % capacityCount];
 		productType product = products[rand() % sectionCount];
 		return Car(capacity, product);
 	}
@@ -79,7 +78,7 @@ private:
 	static const int maxTimeInterval = 2000; // in milliseconds
 
 	void Add(Car& car) {
-		generalQueues[car.product].push(car);
+		generalQueues[static_cast<size_t>(car.product)].push(car);
 	}
 };
 
@@ -93,17 +92,17 @@ struct RoadToSection {
 	void MovingFromQueueToRoad(GeneralQueue& queue) {
 		while (true)
 		{
-			if (carQueue.size() < 4) {
-				if (!queue.generalQueues[product].empty())
+			if (carQueue.size() < maxCars) {
+				if (!queue.generalQueues[static_cast<size_t>(product)].empty())
 				{
 					size_t carCount = carQueue.size();
 					std::vector<Car> movingCars;
 
-					while ((carCount < 4) && (!queue.generalQueues[product].empty()))
+					while ((carCount < maxCars) && (!queue.generalQueues[static_cast<size_t>(product)].empty()))
 					{
-						Car car = queue.generalQueues[product].front();
+						Car car = queue.generalQueues[static_cast<size_t>(product)].front();
 						movingCars.push_back(car);
-						queue.generalQueues[product].pop();
+						queue.generalQueues[static_cast<size_t>(product)].pop();
 						carCount++;
 					}
 
@@ -114,7 +113,7 @@ struct RoadToSection {
 							Add(car);
 						}
 						catch (...) {
-							;
+							std::cerr << "Problems when adding a car on the road to the section";
 						}
 				}
 				else
@@ -131,7 +130,7 @@ private:
 	productType product;
 
 	void Add(Car& car) {
-		if (carQueue.size() < 4)
+		if (carQueue.size() < maxCars)
 			carQueue.push(car);
 		else
 			throw std::exception("No place on the road");
@@ -159,10 +158,11 @@ struct StoreSection {
 				std::this_thread::sleep_for(std::chrono::milliseconds(moveTimeOfCar));
 				MoveToSection(car);
 			}
-			catch (...) { ; }
+			catch (...) { 
+				std::cerr << "Problems when moving the car to the section";
+			}
 
 			Unload();
-
 		}
 	}
 private:
@@ -199,7 +199,7 @@ struct Monitoring {
 					std::cout << "The section " << i+1 << " is free" << std::endl;
 				else
 					std::cout << "On the section " << i+1 << " the car (" << sections[i].currentCar.capacity
-						<< " boxes of "	<< productNames[sections[i].currentCar.product] << ") is unloading" << std::endl;
+						<< " boxes of "	<< productNames[static_cast<size_t>(sections[i].currentCar.product)] << ") is unloading" << std::endl;
 			}
 
 			std::cout << "============================== ROADS ==================================" << std::endl;
@@ -210,7 +210,8 @@ struct Monitoring {
 				std::lock_guard<std::mutex> guard(coutMutex);
 				for (size_t j = 0; j < roads[i].carQueue.size(); j++) {
 					Car car = roads[i].carQueue.front();
-					std::cout << "The car (" << car.capacity << " boxes of " << productNames[car.product] << ")" << std::endl;
+					std::cout << "The car (" << car.capacity << " boxes of " << productNames[static_cast<size_t>(car.product)] << ")" 
+						<< std::endl;
 					roads[i].carQueue.push(car);
 					roads[i].carQueue.pop();
 				}
@@ -223,7 +224,8 @@ struct Monitoring {
 
 				for (size_t j = 0; j < queue.generalQueues[i].size(); j++) {
 					Car car = queue.generalQueues[i].front();
-					std::cout << "The car (" << car.capacity << " boxes of " << productNames[car.product] << ")" << std::endl;
+					std::cout << "The car (" << car.capacity << " boxes of " << productNames[static_cast<size_t>(car.product)] 
+						<< ")" << std::endl;
 					queue.generalQueues[i].push(car);
 					queue.generalQueues[i].pop();
 				}
