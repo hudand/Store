@@ -9,6 +9,22 @@
 #ifndef PCH_H
 #define PCH_H
 
-// TODO: add headers that you want to pre-compile here
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <queue>
+#include <ctime>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
+#include <memory>
+#include <utility>
+#include <filesystem>
+#include <fstream>
+#include <time.h>
+#include <iomanip>
+#include <sstream>
 
 #endif //PCH_H

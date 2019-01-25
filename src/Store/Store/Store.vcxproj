@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\boost\boost_1_68_0;D:\boost\di;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\boost\boost_1_68_0\lib32-msvc-14.1;D:\boost\boost_1_68_0\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -153,16 +155,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Car.h" />
+    <ClInclude Include="CarGenerator.h" />
+    <ClInclude Include="GeneralQueue.h" />
+    <ClInclude Include="GlobalVariables.h" />
+    <ClInclude Include="Monitoring.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RoadToSection.h" />
+    <ClInclude Include="StoreSection.h" />
+    <ClInclude Include="Unloader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Car.cpp" />
+    <ClCompile Include="CarGenerator.cpp" />
+    <ClCompile Include="GeneralQueue.cpp" />
+    <ClCompile Include="GlobalVariables.cpp" />
+    <ClCompile Include="Monitoring.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RoadToSection.cpp" />
     <ClCompile Include="Store.cpp" />
+    <ClCompile Include="StoreSection.cpp" />
+    <ClCompile Include="Unloader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
